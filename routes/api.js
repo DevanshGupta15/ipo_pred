@@ -3,6 +3,11 @@ const { scrapeGMP } = require('../services/gmpScraper');
 const { scrapeSubscription } = require('../services/subscriptionScraper');
 const { calculateProbability } = require('../utils/calculateProbability');
 
+const { scrapeIPOStatus } = require('../services/ipoStatusScraper');
+const { scrapeIPOPerformance } = require('../services/ipoPerformanceScraper');
+const {scrapeIPOnames} = require('../services/iponamesScraper')
+
+
 const router = express.Router();
 
 
@@ -73,6 +78,39 @@ router.post('/check-ipo', async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
   });
+
+// Route to fetch IPO status
+router.get('/status', async (req, res) => {
+  try {
+    const ipoStatus = await scrapeIPOStatus();
+    res.json({ success: true, data: ipoStatus });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Route to fetch IPO performance
+router.get('/performance', async (req, res) => {
+  try {
+    const performanceData = await scrapeIPOPerformance();
+    res.json({ success: true, data: performanceData });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get('/suggestions', async (req, res) => {
+    try {
+      const suggestions = await scrapeIPOnames();
+      res.json({ success: true, data: suggestions });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
+
+
+ 
+  
   
 
 module.exports = router;
